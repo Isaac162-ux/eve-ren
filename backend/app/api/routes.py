@@ -2,13 +2,16 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from ..core.code_agent import CodeAgent
 from ..core.engine import AIEngine
 from ..core.memory import MemorySystem
-from ..core.models import ChatRequest, MemoryCreate, PatchRequest, TaskCreate
+from ..core.models import ChatRequest, MemoryCreate, PatchRequest, ResearchRequest, TaskCreate
+from ..core.research import ResearchService
 from ..core.scheduler import TaskScheduler
 
-def build_router(engine: AIEngine,memory: MemorySystem,scheduler: TaskScheduler,code_agent: CodeAgent):
+def build_router(engine: AIEngine,memory: MemorySystem,scheduler: TaskScheduler,code_agent: CodeAgent,research: ResearchService):
     router=APIRouter(prefix="/v9")
     @router.post("/chat")
     async def chat(payload: ChatRequest): return await engine.chat(payload.message,payload.conversation_id)
+    @router.post("/research")
+    async def research_topic(payload: ResearchRequest): return await research.research(payload.topic)
     @router.get("/memory")
     async def memories(): return memory.recent()
     @router.post("/memory")
