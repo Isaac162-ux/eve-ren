@@ -29,3 +29,6 @@ class PatchProposal(BaseModel):
     summary: str
     content: str
     requires_approval: bool = True
+
+class ResearchRequest(BaseModel):
+    topic: str = Field(min_length=2, max_length=500)
