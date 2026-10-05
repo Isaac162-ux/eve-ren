@@ -10,6 +10,7 @@ from .core.config import get_settings
 from .core.engine import AIEngine
 from .core.memory import MemorySystem
 from .core.providers.local import OllamaProvider
+from .core.research import ResearchService
 from .core.scheduler import TaskScheduler
 
 settings=get_settings()
@@ -18,6 +19,7 @@ scheduler=TaskScheduler()
 code_agent=CodeAgent()
 provider=OllamaProvider(settings.ollama_base_url,settings.ollama_model,settings.ollama_timeout)
 engine=AIEngine(provider,memory)
+research=ResearchService(provider)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,7 +28,7 @@ async def lifespan(app: FastAPI):
 app=FastAPI(title=settings.app_name,version="0.1.0",lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=settings.allowed_hosts_list)
 app.add_middleware(CORSMiddleware,allow_origins=settings.cors_origins_list,allow_credentials=True,allow_methods=["GET","POST","OPTIONS"],allow_headers=["*"])
-app.include_router(build_router(engine,memory,scheduler,code_agent))
+app.include_router(build_router(engine,memory,scheduler,code_agent,research))
 
 @app.get("/health")
 async def health():
