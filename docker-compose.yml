@@ -1,0 +1,21 @@
+services:
+  eve:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      ENVIRONMENT: production
+      PROVIDER: ollama
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: llama3.2
+      MEMORY_DB_PATH: /app/data/eve_memory.db
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      CORS_ORIGINS: http://localhost:8000
+    volumes: [eve_data:/app/data]
+    depends_on: [ollama]
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    volumes: [ollama_data:/root/.ollama]
+volumes:
+  eve_data:
+  ollama_data:
